@@ -43,7 +43,7 @@ function App() {
       const response = await Axios.post(apiUrl, requestPayload, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
+          "Authorization": `Bearer ${apiKey}`,
         },
       });
   
