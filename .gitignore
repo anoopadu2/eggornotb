@@ -24,5 +24,3 @@ dist-ssr
 *.sw?
 
 #configuration files
-src/config/firebase.js
-src/config/vision.js
