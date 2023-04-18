@@ -9,7 +9,7 @@ import {
 } from "firebase/storage";
 import { storage } from "./config/firebase";
 import { v4 } from "uuid";
-import { detectLabel } from "./config/vison";
+//import { client } from "./config/vision";
 
 function App() {
   const [imageUpload, setImageUpload] = useState(null);
