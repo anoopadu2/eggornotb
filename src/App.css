@@ -4,6 +4,7 @@
   align-items: center;
   justify-content: center;
   margin: 2rem;
+  text-align: center;
 }
 
 img {
@@ -11,6 +12,12 @@ img {
   height: 10rem;
   object-fit: cover;
   margin-right: 1rem;
+}
+
+.uploaded-image {
+  width: auto;
+  height: auto;
+  max-width: 100%;
 }
 
 .upload {

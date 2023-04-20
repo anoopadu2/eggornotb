@@ -17,12 +17,13 @@ function App() {
   const [imageUpload, setImageUpload] = useState(null);
   const [imageUrls, setImageUrls] = useState([]);
   const [detectedText, setDetectedText] = useState(null);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState(null);
   const imagesListRef = ref(storage, "images/");
   const MAX_IMAGES = 3;
   const fileInputRef = useRef(null);
 
   const getTextFromImage = async (imageUrl) => {
-    const apiKey = "";
+    const apiKey = `${import.meta.env.VITE_VISION_API_KEY}`;
     const apiUrl = `https://vision.googleapis.com/v1/images:annotate?key=${apiKey}`;
   
     const requestPayload = {
@@ -62,7 +63,8 @@ function App() {
     const imageRef = ref(storage, `images/${imageUpload.name + v4()}`);
     uploadBytes(imageRef, imageUpload).then((snapshot) => {
       getDownloadURL(snapshot.ref).then(async (url) => {
-        setImageUrls((prev) => [...prev, url]);
+        //setImageUrls((prev) => [...prev, url]);
+        setUploadedImageUrl(url);
         await getTextFromImage(url);
       });
     });
@@ -70,6 +72,11 @@ function App() {
 
   const handleFileChange = (event) => {
     setImageUpload(event.target.files[0]);
+  };
+
+  const resetDetection = () => {
+    setDetectedText(null);
+    setUploadedImageUrl(null); // Reset the URL of the uploaded image
   };
 
   useEffect(() => {
@@ -84,6 +91,12 @@ function App() {
 
   return (
     <div className="App">
+      <h1>
+      All we need is a picture{" "}
+      <span role="img" aria-label="heart">
+        ❤️
+      </span>
+      </h1>
       {/* Conditionally render ImageUpload or ImageText components */}
       {detectedText === null ? (
         <ImageUpload
@@ -93,15 +106,24 @@ function App() {
           fileInputRef={fileInputRef} // Pass the ref to ImageUpload component
         />
       ) : (
-        <ImageText text={detectedText} />
+        <ImageText
+          text={detectedText}
+          onResetDetection={resetDetection}
+          uploadedImageUrl={uploadedImageUrl} // Pass the uploaded image URL to ImageText component
+        />
       )}
 
-      <h1> or try some samples...</h1>
-      <div className="image-container">
-        {imageUrls.map((url) => {
-          return <img key={url} src={url} alt="uploaded image" />;
-        })}
-      </div>
+      {/* Render the samples only when the ImageUpload component is displayed */}
+      {detectedText === null && (
+        <>
+          <h1> or try some samples...</h1>
+          <div className="image-container">
+            {imageUrls.map((url) => {
+              return <img key={url} src={url} alt="uploaded image" />;
+            })}
+          </div>
+        </>
+      )}
     </div>
   );
 }
