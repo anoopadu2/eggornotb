@@ -10,16 +10,19 @@ import {
 import { storage } from "./config/firebase";
 import { v4 } from "uuid";
 import Axios from "axios";
+import ImageUpload from "./components/ImageUpload";
+import ImageText from "./components/ImageText";
 
 function App() {
   const [imageUpload, setImageUpload] = useState(null);
   const [imageUrls, setImageUrls] = useState([]);
-  const fileInputRef = useRef(null);
+  const [detectedText, setDetectedText] = useState(null);
   const imagesListRef = ref(storage, "images/");
   const MAX_IMAGES = 3;
+  const fileInputRef = useRef(null);
 
   const getTextFromImage = async (imageUrl) => {
-    const apiKey = "";
+    const apiKey = "AIzaSyAOejB18CZNVaVOPTFNlyQeW0LFyP9ort4";
     const apiUrl = `https://vision.googleapis.com/v1/images:annotate?key=${apiKey}`;
   
     const requestPayload = {
@@ -44,7 +47,7 @@ function App() {
       const detections = response.data.responses[0].textAnnotations;
       console.log("Text Detections:");
       console.log(detections[0].description);
-      //detections.forEach((text) => console.log(text.description));
+      setDetectedText(detections[0].description);
     } catch (error) {
       console.error("Error detecting text:", error);
     }
@@ -65,6 +68,10 @@ function App() {
     });
   };
 
+  const handleFileChange = (event) => {
+    setImageUpload(event.target.files[0]);
+  };
+
   useEffect(() => {
     listAll(imagesListRef)
       .then((response) =>
@@ -77,24 +84,17 @@ function App() {
 
   return (
     <div className="App">
-      <div className="upload">
-        <h1>
-          All we need is a picture{" "}
-          <span role="img" aria-label="heart">
-            ❤️
-          </span>
-        </h1>
-        <div className="upload-buttons">
-          <input
-            type="file"
-            onChange={(event) => setImageUpload(event.target.files[0])}
-            ref={fileInputRef}
-            style={{ display: "none" }}
-          />
-          <button onClick={handleChooseFileClick}>Choose File</button>
-          <button onClick={uploadFile}>Upload An Image</button>
-        </div>
-      </div>
+      {/* Conditionally render ImageUpload or ImageText components */}
+      {detectedText === null ? (
+        <ImageUpload
+          onFileChange={handleFileChange}
+          onChooseFileClick={handleChooseFileClick}
+          onUploadFile={uploadFile}
+          fileInputRef={fileInputRef} // Pass the ref to ImageUpload component
+        />
+      ) : (
+        <ImageText text={detectedText} />
+      )}
 
       <h1> or try some samples...</h1>
       <div className="image-container">
