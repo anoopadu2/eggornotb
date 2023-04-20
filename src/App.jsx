@@ -22,7 +22,7 @@ function App() {
   const fileInputRef = useRef(null);
 
   const getTextFromImage = async (imageUrl) => {
-    const apiKey = "AIzaSyAOejB18CZNVaVOPTFNlyQeW0LFyP9ort4";
+    const apiKey = "";
     const apiUrl = `https://vision.googleapis.com/v1/images:annotate?key=${apiKey}`;
   
     const requestPayload = {
