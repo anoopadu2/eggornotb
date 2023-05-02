@@ -26,7 +26,7 @@ function App() {
     const apiKey = `${import.meta.env.VITE_VISION_API_KEY}`;
     const apiUrl = `https://vision.googleapis.com/v1/images:annotate?key=${apiKey}`;
   
-    const requestPayload = {
+    const visionPayload = {
       requests: [
         {
           image: {
@@ -44,7 +44,7 @@ function App() {
     };
   
     try {
-      const response = await Axios.post(apiUrl, requestPayload);
+      const response = await Axios.post(apiUrl, visionPayload);
       const detections = response.data.responses[0].textAnnotations;
       console.log("Text Detections:");
       console.log(detections[0].description);
@@ -77,6 +77,17 @@ function App() {
   const resetDetection = () => {
     setDetectedText(null);
     setUploadedImageUrl(null); // Reset the URL of the uploaded image
+  };
+
+  const handleSampleImageClick = async (url) => {
+    // Reset the detected text and uploaded image URL before processing a new image
+    resetDetection();
+
+    // Call getTextFromImage to detect the text and check for the word "egg"
+    await getTextFromImage(url);
+
+    // Update the uploaded image URL state with the sample image URL
+    setUploadedImageUrl(url);
   };
 
   useEffect(() => {
@@ -119,7 +130,13 @@ function App() {
           <h1> or try some samples...</h1>
           <div className="image-container">
             {imageUrls.map((url) => {
-              return <img key={url} src={url} alt="uploaded image" />;
+              return <img
+              key={url}
+              src={url}
+              alt="uploaded image"
+              onClick={() => handleSampleImageClick(url)} // Add onClick event listener to the sample images
+              className="sample-image"
+            />;
             })}
           </div>
         </>

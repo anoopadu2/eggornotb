@@ -41,3 +41,11 @@ img {
   flex-wrap: wrap;
   justify-content: center;
 }
+
+.sample-image {
+  transition: transform 0.3s ease;
+}
+
+.sample-image:hover {
+  transform: scale(1.1);
+}
