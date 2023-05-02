@@ -3,8 +3,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 2rem;
   text-align: center;
+  min-height: 100vh;
+  min-width: 100vw;
 }
 
 img {
@@ -15,9 +16,11 @@ img {
 }
 
 .uploaded-image {
+  display: flex;
   width: auto;
   height: auto;
-  max-width: 100%;
+  max-height: 450px;
+  max-width: 450px;
 }
 
 .upload {
@@ -48,4 +51,35 @@ img {
 
 .sample-image:hover {
   transform: scale(1.1);
+}
+
+.try-image-button {
+  margin-bottom: 1rem;
+}
+
+.go-back-button {
+  margin-top: 1rem;
+}
+
+.image-confirm {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.preview-image {
+  display: flex;
+  width: auto;
+  height: auto;
+  max-height: 450px;
+  max-width: 450px;
+}
+.image-confirm-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.image-confirm-buttons button {
+  margin-top: 2rem;
 }

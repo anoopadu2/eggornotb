@@ -1,4 +1,5 @@
 import "./App.css";
+import React, { memo } from "react";
 import { useState, useEffect, useRef } from "react";
 import {
   ref,
@@ -12,12 +13,30 @@ import { v4 } from "uuid";
 import Axios from "axios";
 import ImageUpload from "./components/ImageUpload";
 import ImageText from "./components/ImageText";
+import ImageConfirm from './components/ImageConfirm';
+
+const Header = () => {
+  return (
+    <h1>
+      All we need is a picture{" "}
+      <span role="img" aria-label="heart">
+        ❤️
+      </span>
+    </h1>
+  );
+};
+
+const MemoizedHeader = memo(Header);
 
 function App() {
   const [imageUpload, setImageUpload] = useState(null);
   const [imageUrls, setImageUrls] = useState([]);
   const [detectedText, setDetectedText] = useState(null);
   const [uploadedImageUrl, setUploadedImageUrl] = useState(null);
+  const [showImageConfirm, setShowImageConfirm] = useState(false);
+  const [previewImageUrl, setPreviewImageUrl] = useState(null);
+  const [showSamples, setShowSamples] = useState(true);
+
   const imagesListRef = ref(storage, "images/");
   const MAX_IMAGES = 3;
   const fileInputRef = useRef(null);
@@ -54,8 +73,9 @@ function App() {
     }
   };
 
-  const handleChooseFileClick = () => {
+  const handleChooseFileClick =  () => {
     fileInputRef.current.click();
+    //setShowSamples(false); // Hide the samples while processing the image
   };
 
   const uploadFile = () => {
@@ -66,17 +86,32 @@ function App() {
         //setImageUrls((prev) => [...prev, url]);
         setUploadedImageUrl(url);
         await getTextFromImage(url);
+        setShowImageConfirm(false); // Hide the ImageConfirm component after uploading the image
       });
     });
   };
 
+  const handleGoBackClick = () => {
+    setShowImageConfirm(false);
+    setShowSamples(true);
+  };  
+
   const handleFileChange = (event) => {
     setImageUpload(event.target.files[0]);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setPreviewImageUrl(e.target.result);
+      setShowImageConfirm(true);
+      setShowSamples(false); // Hide the ImageConfirm component after uploading the image
+    };
+    reader.readAsDataURL(event.target.files[0]);
   };
+  
 
   const resetDetection = () => {
     setDetectedText(null);
     setUploadedImageUrl(null); // Reset the URL of the uploaded image
+    setShowSamples(true); // Show the samples again
   };
 
   const handleSampleImageClick = async (url) => {
@@ -98,23 +133,30 @@ function App() {
         )
       )
       .then((urls) => setImageUrls(urls));
-  }, []);
+  }, [detectedText, showImageConfirm, showSamples]);
 
   return (
     <div className="App">
-      <h1>
+      {/* <h1>
       All we need is a picture{" "}
       <span role="img" aria-label="heart">
         ❤️
       </span>
-      </h1>
-      {/* Conditionally render ImageUpload or ImageText components */}
-      {detectedText === null ? (
+      </h1> /* }
+      {/* Conditionally render ImageUpload or ImageConfirm or ImageText components */}
+      <MemoizedHeader />
+      {detectedText === null && !showImageConfirm ? (
         <ImageUpload
           onFileChange={handleFileChange}
           onChooseFileClick={handleChooseFileClick}
           onUploadFile={uploadFile}
           fileInputRef={fileInputRef} // Pass the ref to ImageUpload component
+        />
+      ) : detectedText === null && showImageConfirm ? (
+        <ImageConfirm
+          onTryImage={uploadFile}
+          onGoBack={handleGoBackClick}
+          previewImage={previewImageUrl}
         />
       ) : (
         <ImageText
@@ -124,8 +166,8 @@ function App() {
         />
       )}
 
-      {/* Render the samples only when the ImageUpload component is displayed */}
-      {detectedText === null && (
+       {/* Render the samples only when the ImageUpload component is displayed and showSamples is true */}
+      {detectedText === null && showSamples && (
         <>
           <h1> or try some samples...</h1>
           <div className="image-container">
