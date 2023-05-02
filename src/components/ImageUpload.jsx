@@ -19,10 +19,6 @@ const ImageUpload = ({
           style={{ display: "none" }}
         />
         {/* The Choose File button triggers a click event on the hidden file input */}
-        <button onClick={onChooseFileClick}>Take a pic</button>
-        {/* Display the file name of the selected image */}
-        {/* <span>{fileInputRef.current && fileInputRef.current.files[0]?.name}</span> */}
-        {/* <button onClick={onUploadFile}>Upload Image</button> */}
         <button onClick={onChooseFileClick}>Select from device</button>
       </div>
     </div>
