@@ -2,8 +2,7 @@ import React from "react";
 
 const ImageUpload = ({ 
     onFileChange, 
-    onChooseFileClick, 
-    onUploadFile, 
+    onChooseFileClick,
     fileInputRef 
 }) => {
 

@@ -6,7 +6,6 @@ import {
   uploadBytes,
   getDownloadURL,
   listAll,
-  list,
 } from "firebase/storage";
 import { storage } from "./config/firebase";
 import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
@@ -220,7 +219,6 @@ function App() {
         <ImageUpload
           onFileChange={handleFileChange}
           onChooseFileClick={handleChooseFileClick}
-          onUploadFile={uploadFile}
           fileInputRef={fileInputRef} // Pass the ref to ImageUpload component
         />
       ) : detectedText === null && showImageConfirm ? (
