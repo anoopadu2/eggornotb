@@ -1,7 +1,6 @@
 import React from "react";
 
-const ImageText = ({ text, onResetDetection, uploadedImageUrl }) => {
-  const hasEgg = text.toLowerCase().includes("egg");
+const ImageText = ({ hasEgg, onResetDetection, uploadedImageUrl }) => {
 
   return (
     <div>
