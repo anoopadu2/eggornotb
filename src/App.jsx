@@ -103,7 +103,7 @@ function App() {
   };  
 
   const getTextFromImage = async (imageUrl) => {
-    const apiKey = import.meta.env.VITE_VISION_API_KEY;
+    const apiKey = `${import.meta.env.VITE_VISION_API_KEY}`;
     const apiUrl = `https://vision.googleapis.com/v1/images:annotate?key=${apiKey}`;
   
     const visionPayload = {
