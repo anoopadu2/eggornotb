@@ -1,6 +1,5 @@
 import "./App.css";
-import React, { memo } from "react";
-import { useState, useEffect, useRef } from "react";
+import React, { memo, useState, useEffect, useRef, useCallback } from "react";
 import {
   ref,
   uploadBytes,
@@ -30,6 +29,8 @@ const Header = () => {
 
 const MemoizedHeader = memo(Header);
 
+const MAX_IMAGES = 3;
+
 function App() {
   const [imageUpload, setImageUpload] = useState(null);
   const [imageUrls, setImageUrls] = useState([]);
@@ -39,10 +40,10 @@ function App() {
   const [showImageConfirm, setShowImageConfirm] = useState(false);
   const [previewImageUrl, setPreviewImageUrl] = useState(null);
   const [showSamples, setShowSamples] = useState(true);
+  const [sampleImagesKey, setSampleImagesKey] = useState(false);
 
   const imagesListRef = ref(storage, "images/");
   const imageHashesRef = collection(db, "imageHashes");
-  const MAX_IMAGES = 3;
   const fileInputRef = useRef(null);
 
   const uploadFile = async () => {
@@ -149,16 +150,16 @@ function App() {
     });
   };  
 
-  const handleChooseFileClick =  () => {
+  const handleChooseFileClick = useCallback(() => {
     fileInputRef.current.click();
-  };
+  }, []);
 
-  const handleGoBackClick = () => {
+  const handleGoBackClick = useCallback(() => {
     setShowImageConfirm(false);
     setShowSamples(true);
-  };  
+  }, []);  
 
-  const handleFileChange = (event) => {
+  const handleFileChange = useCallback((event) => {
     setImageUpload(event.target.files[0]);
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -167,18 +168,17 @@ function App() {
       setShowSamples(false); // Hide the ImageConfirm component after uploading the image
     };
     reader.readAsDataURL(event.target.files[0]);
-  };
+  }, []);
   
 
-  const resetDetection = () => {
+  const resetDetection = useCallback(() => {
     setDetectedText(null);
     setUploadedImageUrl(null); // Reset the URL of the uploaded image
     setShowSamples(true); // Show the samples again
-  };
+    setSampleImagesKey((prevKey) => !prevKey);
+  }, []);
 
-  const handleSampleImageClick = async (url) => {
-    // Reset the detected text and uploaded image URL before processing a new image
-    resetDetection();
+  const handleSampleImageClick = useCallback(async (url) => {
 
     // Call getFirestoreData to check if the sample image data exists in Firestore
     const firestoreData = await getFirestoreData(url, 'url');
@@ -196,7 +196,7 @@ function App() {
 
     // Update the uploaded image URL state with the sample image URL
     setUploadedImageUrl(url);
-  };
+  }, []);
 
   useEffect(() => {
     listAll(imagesListRef)
@@ -209,7 +209,7 @@ function App() {
       .catch((error) => {
         console.error("Error fetching images:", error);
       });
-  }, [detectedText, showImageConfirm, showSamples, hasEgg]);
+  }, [sampleImagesKey]);
 
   return (
     <div className="App">
